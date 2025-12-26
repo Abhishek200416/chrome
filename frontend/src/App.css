@@ -151,16 +151,20 @@ body, input, textarea, button {
   border-radius: 50%;
   margin-left: 4px;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   color: #9aa0a6;
   border: none;
   background: transparent;
 }
 
 .new-tab-button:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
   color: #e8eaed;
-  transform: scale(1.05);
+  transform: scale(1.1);
+}
+
+.new-tab-button:active {
+  transform: scale(0.95);
 }
 
 .toolbar {
