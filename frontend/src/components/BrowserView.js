@@ -167,13 +167,14 @@ const BrowserView = ({
     const handleKeyDown = (e) => {
       // Only handle keyboard when browser content is focused
       if (document.activeElement.tagName !== 'INPUT' && activeTabId) {
+        e.preventDefault();
         handleBrowserKeyDown(e);
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeTabId]);
+  }, [activeTabId, API]); // Fixed dependencies
 
   return (
     <div className="browser-chrome" data-testid="browser-chrome">
