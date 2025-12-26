@@ -10,10 +10,21 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 button, .tab, .action-button, .nav-button {
   -webkit-tap-highlight-color: transparent;
   transform: translateZ(0);
   backface-visibility: hidden;
+}
+
+/* Improve text rendering */
+body, input, textarea, button {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .app-container {
