@@ -183,11 +183,12 @@ button, .tab, .action-button, .nav-button {
   padding: 0 16px;
   gap: 12px;
   height: 40px;
-  transition: background 0.15s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .address-bar:focus-within {
   background: #303134;
+  box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.3);
 }
 
 .address-input {
@@ -342,11 +343,12 @@ button, .tab, .action-button, .nav-button {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 999;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(2px);
 }
 
 .panel-overlay.open {
@@ -446,11 +448,12 @@ button, .tab, .action-button, .nav-button {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: background 0.15s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.send-button:hover {
+.send-button:hover:not(:disabled) {
   background: #aecbfa;
+  transform: scale(1.02);
 }
 
 .send-button:disabled {
