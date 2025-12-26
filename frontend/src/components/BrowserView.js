@@ -48,11 +48,11 @@ const BrowserView = ({
       clearInterval(refreshIntervalRef.current);
     }
 
-    // Refresh screenshot every 2 seconds for live preview
+    // Refresh screenshot every 1 second for live preview (faster updates)
     if (activeTabId) {
       refreshIntervalRef.current = setInterval(() => {
         loadScreenshot();
-      }, 2000);
+      }, 1000);
     }
 
     return () => {
