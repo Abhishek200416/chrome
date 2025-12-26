@@ -124,7 +124,13 @@ class BrowserManager:
             raise ValueError(f"Page {page_id} not found")
         
         page = self.pages[page_id]
-        screenshot = await page.screenshot(full_page=False, type="jpeg", quality=80)
+        # Optimize screenshot: reduce quality for faster loading, use JPEG
+        screenshot = await page.screenshot(
+            full_page=False, 
+            type="jpeg", 
+            quality=75,
+            animations="disabled"  # Disable animations for consistent screenshots
+        )
         
         if path:
             with open(path, "wb") as f:
