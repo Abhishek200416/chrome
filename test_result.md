@@ -382,15 +382,18 @@ frontend:
 
   - task: "Interactive Browser - Scrolling"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/BrowserView.js"
     stuck_count: 0
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "JUST ADDED: Mouse wheel scrolling on browser preview sends scroll events to real browser! User can scroll pages naturally."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTED: Frontend scroll integration working perfectly. Mouse wheel events on browser preview are captured and sent to backend scroll API. Tested on Hacker News with successful page scrolling."
 
   - task: "Settings Panel"
     implemented: true
