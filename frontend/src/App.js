@@ -66,10 +66,15 @@ function App() {
       
       if (tabsList.length > 0 && !activeTabId) {
         setActiveTabId(tabsList[0].id);
+      } else if (tabsList.length === 0) {
+        setActiveTabId(null);
       }
     } catch (error) {
       console.error('Failed to load tabs:', error);
-      toast.error('Failed to load tabs');
+      // Only show toast if it's not a network error on initial load
+      if (tabs.length > 0) {
+        toast.error('Failed to refresh tabs');
+      }
     }
   };
 
@@ -88,11 +93,13 @@ function App() {
       if (response.data.success) {
         const newTab = response.data.tab;
         setActiveTabId(newTab.id);
+        // Reload tabs to get updated list
+        await loadTabs();
         toast.success('New tab created');
       }
     } catch (error) {
       console.error('Failed to create tab:', error);
-      toast.error('Failed to create tab');
+      toast.error('Failed to create tab. Please check backend connection.');
     }
   };
 
@@ -118,10 +125,13 @@ function App() {
   const navigateTab = async (tabId, url) => {
     try {
       await axios.post(`${API}/tabs/${tabId}/navigate`, { url });
-      toast.success('Navigated successfully');
+      // Give a moment for navigation to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await loadTabs();
+      toast.success('Navigation complete');
     } catch (error) {
       console.error('Failed to navigate:', error);
-      toast.error('Failed to navigate');
+      toast.error('Navigation failed. Please check the URL.');
     }
   };
 
