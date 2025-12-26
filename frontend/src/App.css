@@ -218,12 +218,18 @@ body, input, textarea, button {
   padding: 0 16px;
   gap: 12px;
   height: 40px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
 }
 
 .address-bar:focus-within {
   background: #303134;
-  box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.3);
+  box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.4);
+  border-color: #8ab4f8;
+}
+
+.address-bar:hover:not(:focus-within) {
+  background: #3c4043;
 }
 
 .address-input {
