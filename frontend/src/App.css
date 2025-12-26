@@ -527,11 +527,11 @@ body, input, textarea, button {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(-4px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -546,14 +546,59 @@ body, input, textarea, button {
   }
 }
 
+@keyframes tabClose {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    max-width: 240px;
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+    max-width: 0;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+@keyframes tabOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-8px);
+    max-width: 0;
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    max-width: 240px;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 .spinner {
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 .tab {
-  animation: fadeIn 0.2s ease-out;
+  animation: tabOpen 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .chat-message {
-  animation: slideInRight 0.3s ease-out;
+  animation: slideInRight 0.25s ease-out;
+}
+
+.loading-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
 }
