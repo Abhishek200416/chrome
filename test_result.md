@@ -237,15 +237,18 @@ backend:
 
   - task: "Scroll Interaction API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "JUST ADDED: POST /api/tabs/{page_id}/scroll - Enables scrolling the browser page using mouse wheel events!"
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTED: Scroll API working perfectly. Mouse wheel events are captured and sent to browser. Tested scrolling on Hacker News with successful page scroll response."
 
   - task: "Browser Settings Update"
     implemented: true
