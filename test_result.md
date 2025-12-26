@@ -333,7 +333,46 @@ frontend:
     status_history:
       - working: true
         agent: "main"
-        comment: "Live preview updates every 2 seconds with fade-in effect. Optimized loading with opacity transitions."
+        comment: "Live preview updates every 1 second (improved from 2s) with fade-in effect. Faster refresh for better interactivity."
+      - working: true
+        agent: "main"
+        comment: "CRITICAL IMPROVEMENT: Screenshot refresh rate increased to 1000ms for more responsive interaction feedback."
+
+  - task: "Interactive Browser - Mouse Clicks"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/BrowserView.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "JUST ADDED: Clicking on browser preview now sends coordinates to backend for real browser interaction! User can click buttons, links, search boxes in the browser."
+
+  - task: "Interactive Browser - Keyboard Input"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/BrowserView.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "JUST ADDED: Keyboard input is captured and sent to browser! User can type in search boxes, forms, etc. Special keys (Enter, Backspace) supported."
+
+  - task: "Interactive Browser - Scrolling"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/BrowserView.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "JUST ADDED: Mouse wheel scrolling on browser preview sends scroll events to real browser! User can scroll pages naturally."
 
   - task: "Settings Panel"
     implemented: true
