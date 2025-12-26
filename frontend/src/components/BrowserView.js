@@ -20,6 +20,7 @@ const BrowserView = ({
   const [isLoading, setIsLoading] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const refreshIntervalRef = useRef(null);
+  const imageRef = useRef(null);
   const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
   useEffect(() => {
