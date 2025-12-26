@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FiChevronLeft, FiChevronRight, FiRotateCw, FiX, FiPlus, FiSettings, FiMessageSquare, FiLock } from 'react-icons/fi';
 
 const BrowserView = ({
@@ -16,27 +16,19 @@ const BrowserView = ({
   const [addressBarValue, setAddressBarValue] = useState('');
   const [screenshotUrl, setScreenshotUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const refreshIntervalRef = useRef(null);
   const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
   useEffect(() => {
     if (activeTab) {
       setAddressBarValue(activeTab.url);
+      setImageLoaded(false);
       loadScreenshot();
     }
   }, [activeTabId, activeTab]);
 
-  useEffect(() => {
-    // Refresh screenshot every 2 seconds for live preview
-    const interval = setInterval(() => {
-      if (activeTabId) {
-        loadScreenshot();
-      }
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [activeTabId]);
-
-  const loadScreenshot = async () => {
+  const loadScreenshot = useCallback(async () => {
     if (!activeTabId) return;
     
     try {
@@ -45,7 +37,27 @@ const BrowserView = ({
     } catch (error) {
       console.error('Failed to load screenshot:', error);
     }
-  };
+  }, [activeTabId, API]);
+
+  useEffect(() => {
+    // Clear existing interval
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+    }
+
+    // Refresh screenshot every 2 seconds for live preview
+    if (activeTabId) {
+      refreshIntervalRef.current = setInterval(() => {
+        loadScreenshot();
+      }, 2000);
+    }
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
+  }, [activeTabId, loadScreenshot]);
 
   const handleAddressBarSubmit = (e) => {
     e.preventDefault();
@@ -190,7 +202,12 @@ const BrowserView = ({
               alt="Page preview"
               className="page-preview"
               data-testid="page-preview"
-              onError={() => setScreenshotUrl(null)}
+              style={{ opacity: imageLoaded ? 1 : 0.7 }}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => {
+                setScreenshotUrl(null);
+                setImageLoaded(false);
+              }}
             />
             {isLoading && (
               <div className="loading-overlay" data-testid="loading-overlay">
