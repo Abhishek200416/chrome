@@ -293,20 +293,33 @@ const BrowserView = ({
       </div>
 
       {/* Browser Content */}
-      <div className="browser-content" data-testid="browser-content">
+      <div 
+        className="browser-content" 
+        data-testid="browser-content"
+        tabIndex={0}
+        style={{ outline: 'none' }}
+      >
         {activeTab && screenshotUrl ? (
           <>
             <img
+              ref={imageRef}
               src={screenshotUrl}
               alt="Page preview"
               className="page-preview"
               data-testid="page-preview"
-              style={{ opacity: imageLoaded ? 1 : 0.7 }}
+              style={{ 
+                opacity: imageLoaded ? 1 : 0.7,
+                cursor: 'pointer',
+                userSelect: 'none'
+              }}
               onLoad={() => setImageLoaded(true)}
               onError={() => {
                 setScreenshotUrl(null);
                 setImageLoaded(false);
               }}
+              onClick={handleBrowserClick}
+              onWheel={handleBrowserScroll}
+              draggable={false}
             />
             {isLoading && (
               <div className="loading-overlay" data-testid="loading-overlay">
