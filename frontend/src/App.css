@@ -188,20 +188,24 @@ body, input, textarea, button {
   justify-content: center;
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
   color: #9aa0a6;
   background: transparent;
   border: none;
 }
 
 .nav-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
   color: #e8eaed;
-  transform: scale(1.05);
+  transform: scale(1.08);
+}
+
+.nav-button:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .nav-button:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
