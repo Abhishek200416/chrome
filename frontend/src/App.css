@@ -254,7 +254,7 @@ body, input, textarea, button {
   justify-content: center;
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
   color: #9aa0a6;
   background: transparent;
   border: none;
@@ -262,13 +262,17 @@ body, input, textarea, button {
 }
 
 .action-button:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
   color: #e8eaed;
-  transform: scale(1.05);
+  transform: scale(1.08);
+}
+
+.action-button:active {
+  transform: scale(0.95);
 }
 
 .action-button.active {
-  background: rgba(138, 180, 248, 0.15);
+  background: rgba(138, 180, 248, 0.2);
   color: #8ab4f8;
 }
 
