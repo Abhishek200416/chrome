@@ -18,7 +18,7 @@ class BrowserManager:
         self.user_data_dir.mkdir(exist_ok=True)
         self.settings = {
             "browser_type": "chromium",
-            "headless": False,
+            "headless": True,
             "viewport": {"width": 1920, "height": 1080},
             "user_agent": None,
             "timezone": None,
