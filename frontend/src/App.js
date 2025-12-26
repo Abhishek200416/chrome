@@ -20,7 +20,7 @@ function App() {
   const [socket, setSocket] = useState(null);
   const [browserSettings, setBrowserSettings] = useState({
     browser_type: 'chromium',
-    headless: false,
+    headless: true,
     viewport: { width: 1920, height: 1080 }
   });
 
