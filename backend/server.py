@@ -363,6 +363,118 @@ async def get_tab_screenshot(page_id: str):
         logger.error(f"Screenshot failed: {e}")
         raise HTTPException(status_code=500, detail=f"Screenshot error: {str(e)}")
 
+# Mouse and Keyboard Interaction APIs
+class MouseClick(BaseModel):
+    x: int
+    y: int
+    button: Optional[str] = "left"  # left, right, middle
+    click_count: Optional[int] = 1
+
+class KeyboardInput(BaseModel):
+    text: str
+    delay: Optional[int] = 50  # milliseconds between keystrokes
+
+class ScrollInput(BaseModel):
+    delta_x: Optional[int] = 0
+    delta_y: int = 100
+
+@api_router.post("/tabs/{page_id}/click")
+async def click_on_page(page_id: str, click_data: MouseClick):
+    """Send mouse click to the browser at specified coordinates"""
+    try:
+        if page_id not in active_tabs:
+            raise HTTPException(status_code=404, detail="Tab not found")
+        
+        page = active_tabs[page_id].get("page")
+        if not page or page.is_closed():
+            raise HTTPException(status_code=404, detail="Page is closed")
+        
+        # Perform mouse click at coordinates
+        await page.mouse.click(
+            click_data.x, 
+            click_data.y,
+            button=click_data.button,
+            click_count=click_data.click_count
+        )
+        
+        logger.info(f"Clicked at ({click_data.x}, {click_data.y}) on tab {page_id}")
+        
+        return {"success": True, "x": click_data.x, "y": click_data.y}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Click failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Click error: {str(e)}")
+
+@api_router.post("/tabs/{page_id}/type")
+async def type_on_page(page_id: str, keyboard_data: KeyboardInput):
+    """Send keyboard input to the browser"""
+    try:
+        if page_id not in active_tabs:
+            raise HTTPException(status_code=404, detail="Tab not found")
+        
+        page = active_tabs[page_id].get("page")
+        if not page or page.is_closed():
+            raise HTTPException(status_code=404, detail="Page is closed")
+        
+        # Type text with human-like delays
+        await page.keyboard.type(keyboard_data.text, delay=keyboard_data.delay)
+        
+        logger.info(f"Typed text on tab {page_id}")
+        
+        return {"success": True, "text_length": len(keyboard_data.text)}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Typing failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Typing error: {str(e)}")
+
+@api_router.post("/tabs/{page_id}/keypress")
+async def press_key(page_id: str, key: str):
+    """Press a specific key (Enter, Backspace, etc.)"""
+    try:
+        if page_id not in active_tabs:
+            raise HTTPException(status_code=404, detail="Tab not found")
+        
+        page = active_tabs[page_id].get("page")
+        if not page or page.is_closed():
+            raise HTTPException(status_code=404, detail="Page is closed")
+        
+        # Press the specified key
+        await page.keyboard.press(key)
+        
+        logger.info(f"Pressed key '{key}' on tab {page_id}")
+        
+        return {"success": True, "key": key}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Key press failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Key press error: {str(e)}")
+
+@api_router.post("/tabs/{page_id}/scroll")
+async def scroll_page(page_id: str, scroll_data: ScrollInput):
+    """Scroll the page"""
+    try:
+        if page_id not in active_tabs:
+            raise HTTPException(status_code=404, detail="Tab not found")
+        
+        page = active_tabs[page_id].get("page")
+        if not page or page.is_closed():
+            raise HTTPException(status_code=404, detail="Page is closed")
+        
+        # Scroll using mouse wheel
+        await page.mouse.wheel(scroll_data.delta_x, scroll_data.delta_y)
+        
+        logger.info(f"Scrolled page {page_id}")
+        
+        return {"success": True, "delta_y": scroll_data.delta_y}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Scroll failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Scroll error: {str(e)}")
+
 @api_router.post("/automation/workflow")
 async def run_workflow(workflow_request: WorkflowRequest):
     try:
