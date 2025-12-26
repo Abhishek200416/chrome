@@ -18,6 +18,8 @@ function App() {
   const [chatPanelOpen, setChatPanelOpen] = useState(false);
   const [llmConfigured, setLlmConfigured] = useState(false);
   const [socket, setSocket] = useState(null);
+  const [isCreatingTab, setIsCreatingTab] = useState(false);
+  const [closingTabs, setClosingTabs] = useState(new Set());
   const [browserSettings, setBrowserSettings] = useState({
     browser_type: 'chromium',
     headless: true,
@@ -28,7 +30,8 @@ function App() {
   useEffect(() => {
     const newSocket = io(BACKEND_URL, {
       transports: ['websocket'],
-      reconnection: true
+      reconnection: true,
+      reconnectionDelay: 1000
     });
 
     newSocket.on('connect', () => {
@@ -58,7 +61,7 @@ function App() {
     checkLLMConfig();
   }, []);
 
-  const loadTabs = async () => {
+  const loadTabs = useCallback(async () => {
     try {
       const response = await axios.get(`${API}/tabs`);
       const tabsList = response.data.tabs;
@@ -68,6 +71,9 @@ function App() {
         setActiveTabId(tabsList[0].id);
       } else if (tabsList.length === 0) {
         setActiveTabId(null);
+      } else if (activeTabId && !tabsList.find(t => t.id === activeTabId)) {
+        // Active tab was closed, select first available
+        setActiveTabId(tabsList[0].id);
       }
     } catch (error) {
       console.error('Failed to load tabs:', error);
@@ -76,7 +82,7 @@ function App() {
         toast.error('Failed to refresh tabs');
       }
     }
-  };
+  }, [activeTabId, tabs.length]);
 
   const checkLLMConfig = async () => {
     try {
@@ -88,6 +94,9 @@ function App() {
   };
 
   const createNewTab = async (url = 'https://www.google.com') => {
+    if (isCreatingTab) return; // Prevent multiple rapid clicks
+    
+    setIsCreatingTab(true);
     try {
       const response = await axios.post(`${API}/tabs`, { url });
       if (response.data.success) {
@@ -95,15 +104,23 @@ function App() {
         setActiveTabId(newTab.id);
         // Reload tabs to get updated list
         await loadTabs();
-        toast.success('New tab created');
+        toast.success('New tab created', { duration: 1500 });
       }
     } catch (error) {
       console.error('Failed to create tab:', error);
-      toast.error('Failed to create tab. Please check backend connection.');
+      toast.error('Failed to create tab');
+    } finally {
+      setIsCreatingTab(false);
     }
   };
 
   const closeTab = async (tabId) => {
+    // Add to closing animation set
+    setClosingTabs(prev => new Set(prev).add(tabId));
+    
+    // Wait for animation
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
     try {
       await axios.delete(`${API}/tabs/${tabId}`);
       
@@ -115,9 +132,22 @@ function App() {
           setActiveTabId(null);
         }
       }
-      toast.success('Tab closed');
+      
+      // Remove from closing set after deletion
+      setClosingTabs(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(tabId);
+        return newSet;
+      });
+      
+      toast.success('Tab closed', { duration: 1500 });
     } catch (error) {
       console.error('Failed to close tab:', error);
+      setClosingTabs(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(tabId);
+        return newSet;
+      });
       toast.error('Failed to close tab');
     }
   };
@@ -128,7 +158,7 @@ function App() {
       // Give a moment for navigation to complete
       await new Promise(resolve => setTimeout(resolve, 500));
       await loadTabs();
-      toast.success('Navigation complete');
+      toast.success('Navigation complete', { duration: 1500 });
     } catch (error) {
       console.error('Failed to navigate:', error);
       toast.error('Navigation failed. Please check the URL.');
@@ -165,6 +195,8 @@ function App() {
         onOpenSettings={openSettings}
         onOpenChat={openChat}
         llmConfigured={llmConfigured}
+        isCreatingTab={isCreatingTab}
+        closingTabs={closingTabs}
       />
 
       <SettingsPanel
