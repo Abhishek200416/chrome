@@ -346,16 +346,22 @@ async def get_tab_screenshot(page_id: str):
         if page_id not in active_tabs:
             raise HTTPException(status_code=404, detail="Tab not found")
         
+        page = active_tabs[page_id].get("page")
+        if not page or page.is_closed():
+            raise HTTPException(status_code=404, detail="Page is closed")
+        
         screenshot = await browser_manager.take_screenshot(page_id)
         
         return StreamingResponse(
             iter([screenshot]),
             media_type="image/jpeg",
-            headers={"Cache-Control": "no-cache"}
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Screenshot failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Screenshot error: {str(e)}")
 
 @api_router.post("/automation/workflow")
 async def run_workflow(workflow_request: WorkflowRequest):
