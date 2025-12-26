@@ -71,21 +71,29 @@ body, input, textarea, button {
   background: #35363a;
   border-radius: 8px 8px 0 0;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid transparent;
   border-bottom: none;
   position: relative;
   overflow: hidden;
-  will-change: transform, background;
+  will-change: transform, background, opacity;
+  transform-origin: center;
 }
 
 .tab:hover {
   background: #3c4043;
+  transform: translateY(-1px);
 }
 
 .tab.active {
   background: #202124;
   border-color: #5f6368;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tab.closing {
+  animation: tabClose 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
 }
 
 .tab-favicon {
