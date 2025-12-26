@@ -4,7 +4,7 @@
   padding: 0;
 }
 
-/* Hardware acceleration and smoothness */
+/* Ultra-smooth hardware acceleration */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -14,10 +14,11 @@ html {
   scroll-behavior: smooth;
 }
 
-button, .tab, .action-button, .nav-button {
+button, .tab, .action-button, .nav-button, .tab-close, .new-tab-button {
   -webkit-tap-highlight-color: transparent;
   transform: translateZ(0);
   backface-visibility: hidden;
+  will-change: transform, opacity;
 }
 
 /* Improve text rendering */
