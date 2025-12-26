@@ -106,8 +106,8 @@ const BrowserView = ({
         body: JSON.stringify({ x, y, button: 'left', click_count: 1 })
       });
       
-      // Refresh screenshot after click
-      setTimeout(() => loadScreenshot(), 500);
+      // Refresh screenshot immediately after click
+      setTimeout(() => loadScreenshot(), 100);
     } catch (error) {
       console.error('Click failed:', error);
     }
@@ -135,8 +135,8 @@ const BrowserView = ({
         });
       }
       
-      // Refresh screenshot after typing
-      setTimeout(() => loadScreenshot(), 300);
+      // Refresh screenshot immediately after typing
+      setTimeout(() => loadScreenshot(), 100);
     } catch (error) {
       console.error('Keyboard input failed:', error);
     }
@@ -155,8 +155,8 @@ const BrowserView = ({
         body: JSON.stringify({ delta_x: 0, delta_y: e.deltaY })
       });
       
-      // Refresh screenshot after scroll
-      setTimeout(() => loadScreenshot(), 200);
+      // Refresh screenshot immediately after scroll
+      setTimeout(() => loadScreenshot(), 100);
     } catch (error) {
       console.error('Scroll failed:', error);
     }
