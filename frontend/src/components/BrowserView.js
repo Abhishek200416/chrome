@@ -91,6 +91,90 @@ const BrowserView = ({
     }
   };
 
+  // Mouse click handler for browser interaction
+  const handleBrowserClick = async (e) => {
+    if (!activeTabId || !imageRef.current) return;
+    
+    const rect = imageRef.current.getBoundingClientRect();
+    const x = Math.round((e.clientX - rect.left) * (1920 / rect.width));
+    const y = Math.round((e.clientY - rect.top) * (1080 / rect.height));
+    
+    try {
+      await fetch(`${API}/tabs/${activeTabId}/click`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ x, y, button: 'left', click_count: 1 })
+      });
+      
+      // Refresh screenshot after click
+      setTimeout(() => loadScreenshot(), 500);
+    } catch (error) {
+      console.error('Click failed:', error);
+    }
+  };
+
+  // Keyboard handler for browser interaction
+  const handleBrowserKeyDown = async (e) => {
+    if (!activeTabId) return;
+    
+    // Don't interfere with address bar
+    if (e.target.tagName === 'INPUT') return;
+    
+    try {
+      if (e.key.length === 1) {
+        // Regular character
+        await fetch(`${API}/tabs/${activeTabId}/type`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: e.key, delay: 50 })
+        });
+      } else {
+        // Special keys (Enter, Backspace, etc.)
+        await fetch(`${API}/tabs/${activeTabId}/keypress?key=${e.key}`, {
+          method: 'POST'
+        });
+      }
+      
+      // Refresh screenshot after typing
+      setTimeout(() => loadScreenshot(), 300);
+    } catch (error) {
+      console.error('Keyboard input failed:', error);
+    }
+  };
+
+  // Scroll handler for browser interaction
+  const handleBrowserScroll = async (e) => {
+    if (!activeTabId) return;
+    
+    e.preventDefault();
+    
+    try {
+      await fetch(`${API}/tabs/${activeTabId}/scroll`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ delta_x: 0, delta_y: e.deltaY })
+      });
+      
+      // Refresh screenshot after scroll
+      setTimeout(() => loadScreenshot(), 200);
+    } catch (error) {
+      console.error('Scroll failed:', error);
+    }
+  };
+
+  // Add keyboard event listener
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Only handle keyboard when browser content is focused
+      if (document.activeElement.tagName !== 'INPUT' && activeTabId) {
+        handleBrowserKeyDown(e);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTabId]);
+
   return (
     <div className="browser-chrome" data-testid="browser-chrome">
       {/* Tab Bar */}
