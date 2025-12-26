@@ -360,10 +360,6 @@ test_plan:
     - "Navigation Controls"
     - "Live Screenshot Preview"
     - "Smooth UI Animations"
-    - "Tab Creation API"
-    - "Tab Deletion API"
-    - "Navigation API"
-    - "Screenshot API"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
