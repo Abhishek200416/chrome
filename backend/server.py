@@ -150,9 +150,64 @@ async def get_browser_status():
 @api_router.post("/browser/settings")
 async def update_browser_settings(settings: BrowserSettings):
     try:
+        # Store current tab info before restart
+        tabs_backup = []
+        for page_id, tab_info in active_tabs.items():
+            page = tab_info["page"]
+            try:
+                tabs_backup.append({
+                    "url": page.url if page else tab_info["url"],
+                    "title": await page.title() if page else tab_info["title"]
+                })
+            except:
+                tabs_backup.append({
+                    "url": tab_info.get("url", "about:blank"),
+                    "title": tab_info.get("title", "New Tab")
+                })
+        
+        # Update settings (this may restart browser)
         await browser_manager.update_settings(settings.dict(exclude_none=True))
+        
+        # Clear old tabs and contexts
+        active_tabs.clear()
+        active_contexts.clear()
+        
+        # Recreate default context
+        context_id, context = await browser_manager.create_context("default")
+        active_contexts[context_id] = {"pages": [], "profile": "default"}
+        
+        # Recreate tabs with backed up URLs
+        for tab_data in tabs_backup[:3]:  # Limit to 3 tabs to avoid issues
+            page_id, page = await browser_manager.create_page(context_id)
+            active_contexts[context_id]["pages"].append(page_id)
+            active_tabs[page_id] = {
+                "context_id": context_id,
+                "page": page,
+                "title": tab_data["title"],
+                "url": tab_data["url"],
+                "favicon": ""
+            }
+            try:
+                await page.goto(tab_data["url"], wait_until="domcontentloaded", timeout=10000)
+            except:
+                pass
+        
+        # If no tabs were backed up, create a default one
+        if not tabs_backup:
+            page_id, page = await browser_manager.create_page(context_id)
+            active_contexts[context_id]["pages"].append(page_id)
+            active_tabs[page_id] = {
+                "context_id": context_id,
+                "page": page,
+                "title": "New Tab",
+                "url": "about:blank",
+                "favicon": ""
+            }
+            await page.goto("about:blank")
+        
         return {"success": True, "settings": browser_manager.settings}
     except Exception as e:
+        logger.error(f"Failed to update settings: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/tabs")
