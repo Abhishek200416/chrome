@@ -11,7 +11,9 @@ const BrowserView = ({
   onNavigate,
   onOpenSettings,
   onOpenChat,
-  llmConfigured
+  llmConfigured,
+  isCreatingTab,
+  closingTabs
 }) => {
   const [addressBarValue, setAddressBarValue] = useState('');
   const [screenshotUrl, setScreenshotUrl] = useState(null);
@@ -96,8 +98,8 @@ const BrowserView = ({
           {tabs.map((tab) => (
             <div
               key={tab.id}
-              className={`tab ${tab.id === activeTabId ? 'active' : ''}`}
-              onClick={() => onTabSelect(tab.id)}
+              className={`tab ${tab.id === activeTabId ? 'active' : ''} ${closingTabs.has(tab.id) ? 'closing' : ''}`}
+              onClick={() => !closingTabs.has(tab.id) && onTabSelect(tab.id)}
               data-testid={`tab-${tab.id}`}
             >
               <div className="tab-favicon" data-testid="tab-favicon">
@@ -107,13 +109,16 @@ const BrowserView = ({
                   <div style={{ width: 16, height: 16, background: '#5f6368', borderRadius: '50%' }} />
                 )}
               </div>
-              <div className="tab-title" data-testid="tab-title">{tab.title || 'New Tab'}</div>
+              <div className="tab-title" data-testid="tab-title">
+                {tab.title || 'New Tab'}
+              </div>
               <button
                 className="tab-close"
                 onClick={(e) => {
                   e.stopPropagation();
                   onTabClose(tab.id);
                 }}
+                disabled={closingTabs.has(tab.id)}
                 data-testid={`tab-close-${tab.id}`}
               >
                 <FiX size={14} />
@@ -123,9 +128,15 @@ const BrowserView = ({
           <button
             className="new-tab-button"
             onClick={() => onNewTab()}
+            disabled={isCreatingTab}
+            title="New tab"
             data-testid="new-tab-button"
           >
-            <FiPlus size={18} />
+            {isCreatingTab ? (
+              <FiRotateCw size={16} className="spinner" />
+            ) : (
+              <FiPlus size={18} />
+            )}
           </button>
         </div>
 
@@ -135,6 +146,7 @@ const BrowserView = ({
             <button
               className="nav-button"
               disabled={!activeTab}
+              title="Back"
               data-testid="back-button"
             >
               <FiChevronLeft size={20} />
@@ -142,6 +154,7 @@ const BrowserView = ({
             <button
               className="nav-button"
               disabled={!activeTab}
+              title="Forward"
               data-testid="forward-button"
             >
               <FiChevronRight size={20} />
@@ -149,7 +162,8 @@ const BrowserView = ({
             <button
               className="nav-button"
               onClick={handleRefresh}
-              disabled={!activeTab}
+              disabled={!activeTab || isLoading}
+              title="Refresh"
               data-testid="refresh-button"
             >
               <FiRotateCw size={18} className={isLoading ? 'spinner' : ''} />
@@ -225,7 +239,7 @@ const BrowserView = ({
             color: '#5f6368',
             fontSize: '16px'
           }}>
-            {tabs.length === 0 ? 'No tabs open' : 'Loading...'}
+            {tabs.length === 0 ? 'No tabs open - Click + to create a new tab' : 'Loading...'}
           </div>
         )}
       </div>
