@@ -436,18 +436,28 @@ frontend:
 
 metadata:
   created_by: "main_agent"
-  version: "2.0"
-  test_sequence: 0
+  version: "3.0"
+  test_sequence: 1
   run_ui: true
-  last_updated: "2025-01-XX"
+  last_updated: "2025-12-26"
+  major_update: "Added full interactive browser control with mouse/keyboard/scroll"
 
 test_plan:
   current_focus:
-    - "Tab Management UI"
-    - "Navigation Controls"
-    - "Live Screenshot Preview"
-    - "Smooth UI Animations"
+    - "Interactive Browser - Mouse Clicks"
+    - "Interactive Browser - Keyboard Input"
+    - "Interactive Browser - Scrolling"
+    - "Mouse Click Interaction API"
+    - "Keyboard Typing API"
+    - "Keyboard Key Press API"
+    - "Scroll Interaction API"
+    - "Tab Creation Speed (must be instant like Chrome)"
+    - "YouTube Video Playback"
+    - "Google Search Functionality"
+    - "Settings Panel - All Features"
   stuck_tasks: []
+  test_all: true
+  test_priority: "critical_first"
   test_all: false
   test_priority: "high_first"
 
