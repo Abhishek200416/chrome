@@ -12,7 +12,7 @@ from typing import Dict, List, Optional
 import base64
 
 # Configuration
-BACKEND_URL = "https://webautonomous.preview.emergentagent.com/api"
+BACKEND_URL = "https://autopilot-web.preview.emergentagent.com/api"
 TIMEOUT = 10
 TEST_URLS = [
     "https://www.google.com",
