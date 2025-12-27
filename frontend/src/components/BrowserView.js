@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FiChevronLeft, FiChevronRight, FiRotateCw, FiX, FiPlus, FiSettings, FiMessageSquare, FiLock } from 'react-icons/fi';
+import VNCViewer from './VNCViewer';
 
 const BrowserView = ({
   tabs,
