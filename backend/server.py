@@ -565,6 +565,62 @@ async def websocket_endpoint(websocket: WebSocket):
         logger.error(f"WebSocket error: {e}")
         manager.disconnect(websocket)
 
+# VNC WebSocket Proxy for Real Browser Streaming
+@app.websocket("/vnc")
+async def vnc_proxy(websocket: WebSocket):
+    """Proxy WebSocket connection to VNC server for real browser display"""
+    import socket
+    
+    await websocket.accept()
+    logger.info("VNC WebSocket connection established")
+    
+    try:
+        # Connect to VNC server (port 5900)
+        vnc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        vnc_socket.connect(("127.0.0.1", 5900))
+        vnc_socket.setblocking(False)
+        
+        logger.info("Connected to VNC server at 127.0.0.1:5900")
+        
+        # Bidirectional proxy loop
+        async def forward_to_vnc():
+            """Forward WebSocket messages to VNC server"""
+            try:
+                while True:
+                    data = await websocket.receive_bytes()
+                    vnc_socket.sendall(data)
+            except Exception as e:
+                logger.error(f"Error forwarding to VNC: {e}")
+        
+        async def forward_to_websocket():
+            """Forward VNC server data to WebSocket"""
+            try:
+                while True:
+                    data = await asyncio.wait_for(
+                        asyncio.get_event_loop().sock_recv(vnc_socket, 4096),
+                        timeout=0.1
+                    )
+                    if data:
+                        await websocket.send_bytes(data)
+                    await asyncio.sleep(0.001)  # Small delay to prevent CPU spike
+            except asyncio.TimeoutError:
+                pass
+            except Exception as e:
+                logger.error(f"Error forwarding from VNC: {e}")
+        
+        # Run both directions concurrently
+        await asyncio.gather(
+            forward_to_vnc(),
+            forward_to_websocket()
+        )
+        
+    except Exception as e:
+        logger.error(f"VNC proxy error: {e}")
+    finally:
+        vnc_socket.close()
+        await websocket.close()
+        logger.info("VNC WebSocket connection closed")
+
 # Include the router in the main app
 app.include_router(api_router)
 
