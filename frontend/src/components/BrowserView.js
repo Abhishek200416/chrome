@@ -21,12 +21,8 @@ const BrowserView = ({
   const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-  // Sync address bar with active tab URL
-  useEffect(() => {
-    if (activeTab?.url) {
-      setAddressBarValue(activeTab.url);
-    }
-  }, [activeTab?.url]);
+  // Use derived state for address bar
+  const displayUrl = addressBarValue || activeTab?.url || '';
 
   const handleAddressBarSubmit = (e) => {
     e.preventDefault();
