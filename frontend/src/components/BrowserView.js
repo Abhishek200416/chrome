@@ -22,10 +22,10 @@ const BrowserView = ({
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
-    if (activeTab) {
+    if (activeTab && activeTab.url !== addressBarValue) {
       setAddressBarValue(activeTab.url);
     }
-  }, [activeTabId, activeTab]);
+  }, [activeTabId, activeTab?.url]);
 
   const handleAddressBarSubmit = (e) => {
     e.preventDefault();
