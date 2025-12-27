@@ -18,7 +18,7 @@ class BrowserManager:
         self.user_data_dir.mkdir(exist_ok=True)
         self.settings = {
             "browser_type": "chromium",
-            "headless": True,
+            "headless": False,  # Default to HEADED mode for VNC streaming
             "viewport": {"width": 1920, "height": 1080},
             "user_agent": None,
             "timezone": None,
