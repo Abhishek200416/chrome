@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import RFB from '@novnc/novnc/core/rfb';
+import RFB from '@novnc/novnc/lib/rfb';
 
 const VNCViewer = ({ backendUrl }) => {
   const vncRef = useRef(null);
