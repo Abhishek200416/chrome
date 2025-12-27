@@ -21,11 +21,11 @@ const BrowserView = ({
   const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-  useEffect(() => {
-    if (activeTab && activeTab.url !== addressBarValue) {
-      setAddressBarValue(activeTab.url);
-    }
-  }, [activeTabId, activeTab?.url]);
+  // Update address bar when active tab changes
+  const currentUrl = activeTab?.url || '';
+  if (addressBarValue !== currentUrl && !document.activeElement || document.activeElement.tagName !== 'INPUT') {
+    setAddressBarValue(currentUrl);
+  }
 
   const handleAddressBarSubmit = (e) => {
     e.preventDefault();
