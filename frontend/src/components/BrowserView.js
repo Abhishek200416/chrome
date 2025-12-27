@@ -139,8 +139,9 @@ const BrowserView = ({
               <input
                 type="text"
                 className="address-input"
-                value={addressBarValue}
+                value={displayUrl}
                 onChange={(e) => setAddressBarValue(e.target.value)}
+                onFocus={() => setAddressBarValue(activeTab?.url || '')}
                 placeholder="Search or enter URL"
                 disabled={!activeTab}
                 data-testid="address-input"
