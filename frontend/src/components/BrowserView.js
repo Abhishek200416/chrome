@@ -26,9 +26,9 @@ const BrowserView = ({
 
   const handleAddressBarSubmit = (e) => {
     e.preventDefault();
-    if (!activeTabId || !addressBarValue) return;
+    if (!activeTabId || !displayUrl) return;
 
-    let url = addressBarValue;
+    let url = displayUrl;
     
     // Add protocol if missing
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
@@ -41,6 +41,7 @@ const BrowserView = ({
     }
 
     setIsLoading(true);
+    setAddressBarValue(''); // Clear the input after submission
     onNavigate(activeTabId, url);
     setTimeout(() => setIsLoading(false), 2000);
   };
