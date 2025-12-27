@@ -1,125 +1,66 @@
 import React, { useEffect, useRef, useState } from 'react';
-import RFB from '@novnc/novnc/lib/rfb';
 
 const VNCViewer = ({ backendUrl }) => {
-  const vncRef = useRef(null);
-  const rfbRef = useRef(null);
+  const iframeRef = useRef(null);
   const [connected, setConnected] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
 
   useEffect(() => {
-    if (!vncRef.current) return;
-
-    try {
-      // Clear any existing connection
-      if (rfbRef.current) {
-        rfbRef.current.disconnect();
-        rfbRef.current = null;
-      }
-
-      // Create WebSocket URL for VNC connection
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = backendUrl 
-        ? `${wsProtocol}//${backendUrl.replace(/^https?:\/\//, '')}/vnc`
-        : `${wsProtocol}//${window.location.host}/vnc`;
-
-      console.log('🔗 Connecting to VNC:', wsUrl);
-
-      // Create RFB connection
-      const rfb = new RFB(vncRef.current, wsUrl, {
-        credentials: { password: '' }
-      });
-
-      // Event handlers
-      rfb.addEventListener('connect', () => {
-        console.log('✅ VNC Connected');
+    // VNC is accessed via noVNC web interface running on port 6080
+    // The websockify proxy forwards to VNC server on port 5900
+    setConnected(true);
+    
+    // Monitor iframe load status
+    const iframe = iframeRef.current;
+    if (iframe) {
+      iframe.onload = () => {
+        console.log('✅ VNC iframe loaded successfully');
         setConnected(true);
         setConnectionError(null);
-        
-        // Set quality and compression
-        rfb.qualityLevel = 6;
-        rfb.compressionLevel = 2;
-        
-        // Scale to fit
-        rfb.scaleViewport = true;
-        rfb.resizeSession = false;
-      });
-
-      rfb.addEventListener('disconnect', (e) => {
-        console.log('❌ VNC Disconnected:', e.detail);
-        setConnected(false);
-        if (e.detail.clean === false) {
-          setConnectionError('Connection lost. Retrying...');
-          // Retry after 2 seconds
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        }
-      });
-
-      rfb.addEventListener('credentialsrequired', () => {
-        console.log('🔑 VNC Credentials Required');
-        setConnectionError('Authentication required');
-      });
-
-      rfb.addEventListener('securityfailure', (e) => {
-        console.error('🔒 VNC Security Failure:', e.detail);
-        setConnectionError(`Security error: ${e.detail.reason}`);
-      });
-
-      rfbRef.current = rfb;
-
-    } catch (error) {
-      console.error('❌ VNC Connection Error:', error);
-      setConnectionError(`Connection error: ${error.message}`);
+      };
+      iframe.onerror = (e) => {
+        console.error('❌ VNC iframe load error:', e);
+        setConnectionError('Failed to load VNC viewer');
+      };
     }
+  }, []);
 
-    // Cleanup on unmount
-    return () => {
-      if (rfbRef.current) {
-        rfbRef.current.disconnect();
-        rfbRef.current = null;
-      }
-    };
-  }, [backendUrl]);
+  // Construct the noVNC URL - it runs on port 6080 with websockify
+  const vncUrl = `http://localhost:6080/vnc.html?autoconnect=true&resize=scale`;
 
   return (
     <div className="relative w-full h-full bg-gray-900">
-      {/* VNC Canvas Container */}
-      <div 
-        ref={vncRef} 
-        className="w-full h-full"
-        style={{ 
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
+      {/* VNC iframe - shows real browser via noVNC web interface */}
+      <iframe
+        ref={iframeRef}
+        src={vncUrl}
+        title="Real Browser Display (VNC)"
+        className="w-full h-full border-0"
+        style={{
+          display: 'block',
+          backgroundColor: '#1a1a1a'
         }}
+        allow="fullscreen"
       />
       
-      {/* Connection Status Overlay */}
-      {!connected && (
+      {/* Connection Error Overlay */}
+      {connectionError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90">
           <div className="text-center">
-            {connectionError ? (
-              <div className="text-red-400">
-                <div className="text-xl mb-2">❌ Connection Error</div>
-                <div className="text-sm">{connectionError}</div>
-              </div>
-            ) : (
-              <div className="text-blue-400">
-                <div className="text-xl mb-2">🔄 Connecting to Browser...</div>
-                <div className="animate-pulse text-sm">Establishing VNC connection</div>
-              </div>
-            )}
+            <div className="text-red-400">
+              <div className="text-xl mb-2">❌ Connection Error</div>
+              <div className="text-sm">{connectionError}</div>
+              <div className="text-xs mt-2">VNC URL: {vncUrl}</div>
+            </div>
           </div>
         </div>
       )}
       
       {/* Connected Indicator */}
-      {connected && (
-        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2 shadow-lg">
+      {connected && !connectionError && (
+        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2 shadow-lg z-50">
           <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          LIVE
+          LIVE BROWSER
         </div>
       )}
     </div>
