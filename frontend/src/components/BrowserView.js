@@ -18,7 +18,6 @@ const BrowserView = ({
 }) => {
   const [addressBarValue, setAddressBarValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [useVNC, setUseVNC] = useState(true); // Toggle between VNC and screenshots
   const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
