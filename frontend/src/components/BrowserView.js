@@ -25,41 +25,8 @@ const BrowserView = ({
   useEffect(() => {
     if (activeTab) {
       setAddressBarValue(activeTab.url);
-      setImageLoaded(false);
-      loadScreenshot();
     }
   }, [activeTabId, activeTab]);
-
-  const loadScreenshot = useCallback(async () => {
-    if (!activeTabId) return;
-    
-    try {
-      const timestamp = Date.now();
-      setScreenshotUrl(`${API}/tabs/${activeTabId}/screenshot?t=${timestamp}`);
-    } catch (error) {
-      console.error('Failed to load screenshot:', error);
-    }
-  }, [activeTabId, API]);
-
-  useEffect(() => {
-    // Clear existing interval
-    if (refreshIntervalRef.current) {
-      clearInterval(refreshIntervalRef.current);
-    }
-
-    // Refresh screenshot every 1 second for live preview (faster updates)
-    if (activeTabId) {
-      refreshIntervalRef.current = setInterval(() => {
-        loadScreenshot();
-      }, 1000);
-    }
-
-    return () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-    };
-  }, [activeTabId, loadScreenshot]);
 
   const handleAddressBarSubmit = (e) => {
     e.preventDefault();
