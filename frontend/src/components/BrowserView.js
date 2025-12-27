@@ -17,12 +17,10 @@ const BrowserView = ({
   closingTabs
 }) => {
   const [addressBarValue, setAddressBarValue] = useState('');
-  const [screenshotUrl, setScreenshotUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const refreshIntervalRef = useRef(null);
-  const imageRef = useRef(null);
+  const [useVNC, setUseVNC] = useState(true); // Toggle between VNC and screenshots
   const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     if (activeTab) {
