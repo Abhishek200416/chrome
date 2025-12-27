@@ -39,11 +39,27 @@ class BrowserManager:
         """Launch browser with current settings"""
         try:
             browser_type = getattr(self.playwright, self.settings["browser_type"])
+            
+            # Launch args for VNC display support
+            launch_args = [
+                "--no-sandbox", 
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-blink-features=AutomationControlled",
+                "--disable-background-timer-throttling",
+                "--disable-backgrounding-occluded-windows",
+                "--disable-renderer-backgrounding"
+            ]
+            
+            # If headed mode, use VNC display
+            if not self.settings["headless"]:
+                os.environ["DISPLAY"] = ":99"
+            
             self.browser = await browser_type.launch(
                 headless=self.settings["headless"],
-                args=["--no-sandbox", "--disable-setuid-sandbox"]
+                args=launch_args
             )
-            logger.info(f"Browser launched: {self.settings['browser_type']}")
+            logger.info(f"Browser launched: {self.settings['browser_type']} (headless={self.settings['headless']}, DISPLAY={os.environ.get('DISPLAY', 'None')})")
         except Exception as e:
             logger.error(f"Failed to launch browser: {e}")
             raise
