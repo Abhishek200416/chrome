@@ -181,27 +181,11 @@ const BrowserView = ({
         tabIndex={0}
         style={{ outline: 'none' }}
       >
-        {activeTab && screenshotUrl ? (
+        {activeTab ? (
           <>
-            <img
-              ref={imageRef}
-              src={screenshotUrl}
-              alt="Page preview"
-              className="page-preview"
-              data-testid="page-preview"
-              style={{ 
-                opacity: imageLoaded ? 1 : 0.7,
-                cursor: 'pointer',
-                userSelect: 'none'
-              }}
-              onLoad={() => setImageLoaded(true)}
-              onError={() => {
-                setScreenshotUrl(null);
-                setImageLoaded(false);
-              }}
-              onClick={handleBrowserClick}
-              onWheel={handleBrowserScroll}
-              draggable={false}
+            <VNCViewer 
+              tabId={activeTabId}
+              backendUrl={BACKEND_URL}
             />
             {isLoading && (
               <div className="loading-overlay" data-testid="loading-overlay">
